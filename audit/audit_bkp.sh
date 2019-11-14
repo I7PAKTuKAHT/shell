@@ -11,19 +11,28 @@
 #   You can schedule script once a day by adding it to the crontab 
 #   * * */1 * * <sid>adm /<path to script>/audit_bkp.sh > /<path to script>/audit_bkp.log 2>&1
 
+#   Set retention days for security audit logs
+retention_days=90
+
+#   Set file parts
+preffix="audit_"
+suffix=""
+
+
+#   Set current year
+year=$(date +"%Y")
+
 source $HOME/.sapsrc.sh
 
-month=$(date +"%m")
-year=$(date +"%Y")
 
 ArchiveLogs() {
     for ((j=2000; j<=$year; j++)); do
-        for ((i=1; i<=$month; i++)); do
+        for ((i=1; i<=12; i++)); do
             if [ $i -lt 10 ];
             then
-                find ./ -type f \( -iname "audit_${j}0${i}*" ! -iname "*.zip" \) | xargs -r zip -uv audit_${j}0${i}.zip
+                find ./ -type f \( -iname "${preffix}${j}${suffix}0${i}*" ! -iname "*.zip" \) | xargs -r zip -uv ${preffix}${j}${suffix}0${i}.zip
             else
-                find ./ -type f \( -iname "audit_${j}${i}*" ! -iname "*.zip" \) | xargs -r  zip -uv audit_${j}${i}.zip
+                find ./ -type f \( -iname "${preffix}${j}${suffix}${i}*" ! -iname "*.zip" \) | xargs -r  zip -uv ${preffix}${j}${suffix}${i}.zip
             fi
         done
     done
