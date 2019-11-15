@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#   Name: Audit_bkp.sh
-#   Description: Archiving all ABAP Security audit log files from ABAP dialog instance
+#   Name: audit_bkp.sh
+#   Description: Archiving all ABAP Security audit log files from ABAP dialog instance by month and delete
 #   Author: Boris Gyulumyants
 #   email: bgyulumyants@tsconsulting.com
 #   Version: 0.1
@@ -12,6 +12,7 @@
 #   * * */1 * * <sid>adm /<path to script>/audit_bkp.sh > /<path to script>/audit_bkp.log 2>&1
 
 #   Set retention days for security audit logs
+delete_mode=1
 retention_days=90
 
 #   Set file parts
@@ -21,6 +22,7 @@ suffix=""
 
 #   Set current year
 year=$(date +"%Y")
+local_time=$(date +"%d.%m.%Y %H:%M")
 
 source $HOME/.sapsrc.sh
 
@@ -38,6 +40,20 @@ ArchiveLogs() {
     done
 }
 
+DeleteLogs() {
+    # For the test purpose this code only prints files needs to be removed. To productive run uncomment string
+    find ./ -type f \( -iname "${preffix}*" ! -iname "*.zip" \) -mtime $retention_days -print
+    #find ./ -type f \( -iname "${preffix}*" ! -iname "*.zip" \) -mtime $retention_days -delete
+}
+
+local_time
+echo $local_time
+if [delee_mode -eq 1]; 
+then 
+    echo "Script run in delete mode"
+else
+    echo "Script run in archive mode"
+fi
 
 ls -d /usr/sap/$SAPSYSTEMNAME/[D]*[0-9][0-9] >/dev/null 2>&1
 if [ $? -eq 0 ]; then
@@ -52,10 +68,23 @@ if [ $? -eq 0 ]; then
         rc2=$?
         if [ $rc1 -eq 0 ]; then
             cd /usr/sap/$SAPSYSTEMNAME/DVEBM*[0-9][0-9]/log
+            echo "Archiving logs from: $(pwd)"
             ArchiveLogs
+            if [delee_mode -eq 1]; then 
+                echo "Deleting logs older than $retention_days days from:"
+                echo "$(pwd)"
+                DeleteLogs
+            fi
         elif [ $rc2 -eq 0 ]; then
             cd /usr/sap/$SAPSYSTEMNAME/D[0-9][0-9]/log
+            echo "Archiving logs from: $(pwd)"
             ArchiveLogs
+            if [delee_mode -eq 1]; then 
+                echo "Deleting logs older than $retention_days days from:"
+                echo "$(pwd)"
+                DeleteLogs
+            fi
         fi
     done
 fi
+
