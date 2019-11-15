@@ -7,7 +7,7 @@
 #   Version: 0.1
 #   Date: 13.11.2019
 #
-#   How to use: You can run script manualy bu <sid>adm
+#   How to use: You can run script manualy by <sid>adm
 #   You can schedule script once a day by adding it to the crontab 
 #   * * */1 * * <sid>adm /<path to script>/audit_bkp.sh > /<path to script>/audit_bkp.log 2>&1
 
