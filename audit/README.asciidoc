@@ -1,0 +1,10 @@
+= Backup SAP security audit files
+
+=== audit_bkp.sh
+
+=== Archiving all ABAP Security audit log files from ABAP dialog instance by month and delete
+
+==== How to use: 
+. You can run script manualy by <sid>adm
+. You can schedule script once a day by adding it to the crontab +
+0 23 */1 * * <sid>adm /<path to script>/audit_bkp.sh > /<path to script>/audit_bkp.log 2>&1
