@@ -44,8 +44,8 @@ ArchiveLogs() {
 
 DeleteLogs() {
     # For the test purpose this code only prints files needs to be removed. To productive run uncomment string
-    find ./ -type f \( -iname "${preffix}*" ! -iname "*.zip" \) -mtime $retention_days -print
-    #find ./ -type f \( -iname "${preffix}*" ! -iname "*.zip" \) -mtime $retention_days -delete
+    find ./ -type f \( -iname "${preffix}*" ! \( -iname "*.zip" -or -iname "*.tar.gz" \) \) -mtime $retention_days -print
+    #find ./ -type f \( -iname "${preffix}*" ! \( -iname "*.zip" -or -iname "*.tar.gz" \) \) -mtime $retention_days -delete
 }
 
 
