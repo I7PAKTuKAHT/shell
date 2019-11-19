@@ -71,7 +71,8 @@ else
     echo "Script run in archive mode"
 fi
 
-CrontabCheck
+#   Now work under <sid>adm user cause of /etc/crontab permissions
+#CrontabCheck
 
 ls -d /usr/sap/$SAPSYSTEMNAME/[D]*[0-9][0-9] >/dev/null 2>&1
 if [ $? -eq 0 ]; then
