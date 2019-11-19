@@ -3,30 +3,44 @@
 #   Name: audit_bkp.sh
 #   Description: Archiving all ABAP Security audit log files from ABAP dialog instance by month and delete
 #   Author: Boris Gyulumyants
-#   email: bgyulumyants@tsconsulting.com
-#   Version: 0.1
+#   email: boris.gyulumyants@gmail.com
+#   Version: 0.2
 #   Date: 13.11.2019
 #
 #   How to use: You can run script manualy by <sid>adm
 #   You can schedule script once a day by adding it to the crontab
 #   0 23 */1 * * <sid>adm /<path to script>/audit_bkp.sh > /<path to script>/audit_bkp.log 2>&1
 
-#   Set retention days for security audit logs
-
+#   Set run mode, 1 for delete old audit logs
 delete_mode=1
+#   Set retention days for security audit logs
 retention_days="+60"
 
 #   Set file parts
 preffix="audit_"
 suffix=""
 
-
 #   Set current year
 year=$(date +"%Y")
 local_time=$(date +"%d.%m.%Y %H:%M")
 
+#   Read SAP <sid>adm environment
 source $HOME/.sapsrc.sh
 
+CrontabCheck() {
+    grep "^[#].*audit_bkp.sh" /etc/crontab >/dev/null
+    rc1=$?
+    grep "audit_bkp.sh" /etc/crontab >/dev/null
+    rc2=$?
+    echo "Crontab check:"
+    if [ $rc1 -eq 0 ]; then
+        echo "crontab entry exists but commented" 
+    elif [ $rc2 -eq 0 ]; then
+        echo "crontab entry exists"
+    else 
+        echo "crontab entry is missing"
+    fi
+}
 
 ArchiveLogs() {
     for ((j=2000; j<=$year; j++)); do
@@ -56,6 +70,8 @@ then
 else
     echo "Script run in archive mode"
 fi
+
+CrontabCheck
 
 ls -d /usr/sap/$SAPSYSTEMNAME/[D]*[0-9][0-9] >/dev/null 2>&1
 if [ $? -eq 0 ]; then
