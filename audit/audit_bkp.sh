@@ -98,7 +98,7 @@ if [ $? -eq 0 ]; then
         echo $d | grep $(echo $INSTANCEDIR_DI) >/dev/null
         rc2=$?
         if [ $rc1 -eq 0 ]; then
-            cd $INSTANCEDIR_C*[0-9][0-9]/log
+            cd $INSTANCEDIR_CI*[0-9][0-9]/log
             if [ $? -eq 0 ]; then
                 HandleLogs
             fi
