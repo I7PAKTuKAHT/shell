@@ -27,6 +27,8 @@ local_time=$(date +"%d.%m.%Y %H:%M")
 #   Read SAP <sid>adm environment
 source $HOME/.sapsrc.sh
 
+#   Procedures block
+
 CrontabCheck() {
     grep "^[#].*audit_bkp.sh" /etc/crontab >/dev/null
     rc1=$?
@@ -39,6 +41,16 @@ CrontabCheck() {
         echo "crontab entry exists"
     else 
         echo "crontab entry is missing"
+    fi
+}
+
+HandleLogs() {
+    echo "Archiving logs from: $(pwd)"
+    ArchiveLogs
+    if [ $delete_mode -eq 1 ]; then
+        echo "Deleting logs older than $retention_days days from:"
+        echo "$(pwd)"
+        DeleteLogs
     fi
 }
 
@@ -62,7 +74,7 @@ DeleteLogs() {
     #find ./ -type f \( -iname "${preffix}*" ! \( -iname "*.zip" -or -iname "*.tar.gz" \) \) -mtime $retention_days -delete
 }
 
-
+#   Main program
 echo $local_time
 if [ $delete_mode -eq 1 ];
 then
@@ -86,26 +98,14 @@ if [ $? -eq 0 ]; then
         echo $d | grep $(echo $INSTANCEDIR_DI) >/dev/null
         rc2=$?
         if [ $rc1 -eq 0 ]; then
-            cd /usr/sap/$SAPSYSTEMNAME/DVEBM*[0-9][0-9]/log
+            cd $INSTANCEDIR_C*[0-9][0-9]/log
             if [ $? -eq 0 ]; then
-                echo "Archiving logs from: $(pwd)"
-                ArchiveLogs
-                if [ $delete_mode -eq 1 ]; then
-                    echo "Deleting logs older than $retention_days days from:"
-                    echo "$(pwd)"
-                    DeleteLogs
-                fi
+                HandleLogs
             fi
         elif [ $rc2 -eq 0 ]; then
-            cd /usr/sap/$SAPSYSTEMNAME/D[0-9][0-9]/log
+            cd $INSTANCEDIR_DI[0-9][0-9]/log
             if [ $? -eq 0 ]; then
-                echo "Archiving logs from: $(pwd)"
-                ArchiveLogs
-                if [ $delete_mode -eq 1 ]; then
-                    echo "Deleting logs older than $retention_days days from:"
-                    echo "$(pwd)"
-                    DeleteLogs
-                fi
+                HandleLogs
             fi
         fi
     done
