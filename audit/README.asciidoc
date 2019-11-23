@@ -8,3 +8,19 @@
 . You can run script manualy by <sid>adm
 . You can schedule script once a day by adding it to the crontab +
 0 23 */1 * * <sid>adm /<path to script>/audit_bkp.sh > /<path to script>/audit_bkp.log 2>&1
+
+==== Options
+
+|===
+|Option     |Description    |Defaults
+|Delete Mode | Set run mode, 1 for delete old audit logs
+|delete_mode=1
+
+|Retention Days |Set retention days for security audit logs
+|retention_days="+60"
+
+|File mask |SAP ABAP security audit file looks like audit_<year><months><day>,for example audit_20191102
+
+|preffix="audit_" + 
+suffix=""
+|===
